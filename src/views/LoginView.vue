@@ -25,7 +25,7 @@ export default defineComponent({
     }
   },
   methods: {
-    buttonClicked() {
+    performLogin() {
       alert(this.message);
     }
   }
@@ -36,24 +36,28 @@ export default defineComponent({
   <div class="el-container login-main el-row">
     <div class="login-form el-col-6">
       <el-image style="width: 200px; height: 100px" :src="logoUrl" fit="contain" />
-      <el-form :model="login" label-width="auto" label-position="top">
-        <el-form-item label="E-mail">
-          <el-input v-model="login.email"></el-input>
-        </el-form-item>
-        <el-form-item label="Senha" label-width="auto">
-          <el-input v-model="login.password"></el-input>
-        </el-form-item>
-        <el-form-item label="Manter logado" label-width="auto">
-          <el-switch
-            v-model="login.remember"
-            inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
-          >
-          </el-switch>
-        </el-form-item>
-      </el-form>
-      <el-button @click="buttonClicked">Login</el-button>
+      <div class="el-row input-region">
+        <div class="el-col-20">
+          <el-form :model="login" label-width="auto" label-position="top" size="large">
+            <el-form-item label="E-mail" label-width="auto">
+              <el-input v-model="login.email"></el-input>
+            </el-form-item>
+            <el-form-item label="Senha" label-width="auto">
+              <el-input v-model="login.password"></el-input>
+            </el-form-item>
+            <el-form-item label="Manter logado" label-width="auto">
+              <el-switch
+                v-model="login.remember"
+                inline-prompt
+                :active-icon="Check"
+                :inactive-icon="Close"
+              >
+              </el-switch>
+            </el-form-item>
+          </el-form>
+        </div>
+      </div>
+      <el-button type="primary" plain size="large" @click="performLogin">Login</el-button>
     </div>
   </div>
 </template>
@@ -72,5 +76,12 @@ export default defineComponent({
   border-radius: 10px;
   background-color: #f0f0f0;
   box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
+}
+.input-region {
+  justify-content: center;
+  align-items: center;
+}
+.el-form-item__label {
+  margin-bottom: 0!important;
 }
 </style>
