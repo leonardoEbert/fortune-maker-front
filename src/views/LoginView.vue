@@ -81,7 +81,4 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 }
-.el-form-item__label {
-  margin-bottom: 0!important;
-}
 </style>
