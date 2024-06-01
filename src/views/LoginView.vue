@@ -31,7 +31,6 @@ export default defineComponent({
     async performLogin() {
       await axiosService.post('/auth/login', this.login)
         .then(response => {
-          console.log(response)
           const authStore = useAuthStore()
           authStore.setToken(response.access_token)
           router.push('/')
