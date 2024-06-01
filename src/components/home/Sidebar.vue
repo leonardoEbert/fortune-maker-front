@@ -20,6 +20,7 @@ export default defineComponent({
     default-active="2"
     class="el-menu-vertical"
     :collapse="isCollapse"
+    router
   >
     <el-row justify="center">
       <el-button link @click="isCollapse = !isCollapse">
@@ -61,7 +62,7 @@ export default defineComponent({
     </span>
     <el-row class="fixed-bottom-item">
       <el-divider border-style="solid" direction="horizontal" class="collapse-toggle-divider" />
-      <el-menu-item index="999" class="config-menu-item">
+      <el-menu-item index="999" class="config-menu-item" route="/config">
         <el-icon><setting /></el-icon>
         <template #title>Configurações</template>
       </el-menu-item>
