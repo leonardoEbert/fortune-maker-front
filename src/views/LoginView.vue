@@ -3,6 +3,8 @@ import { defineComponent } from 'vue'
 import { Check, Close } from '@element-plus/icons-vue'
 import logoFM from '@/assets/logo.png'
 import axiosService from '@/common/axios.service'
+import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
 
 export default defineComponent({
   name: 'LoginView',
@@ -27,9 +29,16 @@ export default defineComponent({
   },
   methods: {
     async performLogin() {
-      const loginData = await axiosService.post('/auth/login', this.login);
-
-      console.log(loginData);
+      await axiosService.post('/auth/login', this.login)
+        .then(response => {
+          console.log(response)
+          const authStore = useAuthStore()
+          authStore.setToken(response.access_token)
+          router.push('/')
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
   }
 })

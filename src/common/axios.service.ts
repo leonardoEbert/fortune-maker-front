@@ -1,6 +1,7 @@
 import axios, { AxiosHeaders } from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig, AxiosError } from 'axios';
 import router from '@/router';
+import { useAuthStore } from '@/stores/auth';
 
 class AxiosService {
   private instance: AxiosInstance;
@@ -16,7 +17,8 @@ class AxiosService {
 
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        const token = localStorage.getItem('token'); // Exemplo de onde você pode obter o token de autenticação
+        const authStore = useAuthStore();
+        const token = authStore.token
         if (token) {
           if (!config.headers) {
             config.headers = new AxiosHeaders();
@@ -36,6 +38,8 @@ class AxiosService {
       },
       (error: AxiosError) => {
         if (error.response && error.response.status === 401) {
+          const authStore = useAuthStore(); // Acesse a store do Pinia
+          authStore.clearToken(); // Limpe o token
           router.push('/login'); // Redireciona para a rota de login
         }
         return Promise.reject(error);
