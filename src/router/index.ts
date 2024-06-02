@@ -30,7 +30,7 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const authStore = useAuthStore()
-  if (to.meta.requiresAuth && !authStore.isLoggedIn) return '/login'
+  if (to.meta.requiresAuth && (authStore.isLoggedIn === 'false')) return '/login'
 })
 
 export default router
