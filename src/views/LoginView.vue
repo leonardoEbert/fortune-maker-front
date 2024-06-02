@@ -38,7 +38,7 @@ export default defineComponent({
           this.buttonLoading = false
           router.push('/')
         })
-        .catch(error => {
+        .catch(() => {
           ElNotification({
             title: 'Algo deu errado!',
             message: "Ocorreu um problema ao tentar efetuar o login",
