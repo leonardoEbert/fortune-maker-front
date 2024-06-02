@@ -33,6 +33,6 @@ export default defineComponent({
 <style scoped>
 .header-shadow {
   box-shadow: 0 4px 6px -1px rgba(64, 158, 255, 0.6);
-  margin: 0 10px;
+  padding: 0 10px;
 }
 </style>
