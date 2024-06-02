@@ -4,6 +4,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: localStorage.getItem('token') || '',
     isLoggedIn: localStorage.getItem('isLoggedIn') || false,
+    expiresAt: localStorage.getItem('expiresAt') || Date.now(),
   }),
   actions: {
     setToken(newToken: string) {
@@ -15,8 +16,14 @@ export const useAuthStore = defineStore('auth', {
     clearToken() {
       this.token = '';
       this.isLoggedIn = false;
+      this.expiresAt = Date.now();
       localStorage.removeItem('token');
       localStorage.setItem('isLoggedIn', `${this.isLoggedIn}`);
+      localStorage.removeItem('expiresAt');
     },
+    setExpiration(expiresAt: number) {
+      this.expiresAt = expiresAt;
+      localStorage.setItem('expiresAt', `${this.expiresAt}`);
+    }
   },
 });
