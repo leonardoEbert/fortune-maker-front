@@ -21,6 +21,9 @@ export class AuthService {
         authStore.setToken(response.accessToken)
         authStore.setExpiration(response.expiresAt)
       })
+      .catch((error) => {
+        console.error(error)
+      })
 
   }
 }

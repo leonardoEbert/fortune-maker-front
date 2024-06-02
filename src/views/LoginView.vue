@@ -4,6 +4,7 @@ import { Check, Close } from '@element-plus/icons-vue'
 import logoFM from '@/assets/logo.png'
 import router from '@/router'
 import { AuthService } from '@/service/auth/auth.service'
+import { ElNotification } from 'element-plus'
 
 const authService = new AuthService()
 
@@ -38,7 +39,12 @@ export default defineComponent({
           router.push('/')
         })
         .catch(error => {
-          console.log(error)
+          ElNotification({
+            title: 'Algo deu errado!',
+            message: "Ocorreu um problema ao tentar efetuar o login",
+            position: 'bottom-right',
+            type: 'error',
+          })
         })
         .finally(() => {
           this.buttonLoading = false
