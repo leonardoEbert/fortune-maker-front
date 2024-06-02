@@ -2,9 +2,10 @@
 import { defineComponent } from 'vue'
 import { Check, Close } from '@element-plus/icons-vue'
 import logoFM from '@/assets/logo.png'
-import axiosService from '@/common/axios.service'
-import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
+import { AuthService } from '@/service/auth/auth.service'
+
+const authService = new AuthService()
 
 export default defineComponent({
   name: 'LoginView',
@@ -24,19 +25,23 @@ export default defineComponent({
         password: '',
         remember: false
       },
-      logoUrl: logoFM
+      logoUrl: logoFM,
+      buttonLoading: false
     }
   },
   methods: {
-    async performLogin() {
-      await axiosService.post('/auth/login', this.login)
-        .then(response => {
-          const authStore = useAuthStore()
-          authStore.setToken(response.access_token)
+    performLogin() {
+      this.buttonLoading = true;
+      authService.tryLogin(this.login)
+        .then(() => {
+          this.buttonLoading = false
           router.push('/')
         })
         .catch(error => {
           console.log(error)
+        })
+        .finally(() => {
+          this.buttonLoading = false
         })
     }
   }
@@ -68,7 +73,7 @@ export default defineComponent({
           </el-form>
         </div>
       </div>
-      <el-button type="primary" plain size="large" @click="performLogin">Login</el-button>
+      <el-button type="primary" plain size="large" @click="performLogin" :loading="buttonLoading">Login</el-button>
     </div>
   </div>
 </template>
