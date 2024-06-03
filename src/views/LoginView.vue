@@ -2,9 +2,11 @@
 import { defineComponent } from 'vue'
 import { Check, Close } from '@element-plus/icons-vue'
 import logoFM from '@/assets/logo.png'
-import axiosService from '@/common/axios.service'
-import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
+import { AuthService } from '@/service/auth/auth.service'
+import { ElNotification, type FormInstance } from 'element-plus'
+
+const authService = new AuthService()
 
 export default defineComponent({
   name: 'LoginView',
@@ -24,21 +26,45 @@ export default defineComponent({
         password: '',
         remember: false
       },
-      logoUrl: logoFM
+      logoUrl: logoFM,
+      buttonLoading: false,
+      rules: {
+        email: [
+          { required: true, message: 'Por favor informe o seu e-mail', trigger: 'blur' },
+          { type: 'email', message: 'Por favor informe um endereço de e-mail válido', trigger: ['blur', 'change'] }
+        ],
+        password: [
+          { required: true, message: 'Por favor informe a senha', trigger: 'blur' }
+        ]
+      }
+
     }
   },
   methods: {
-    async performLogin() {
-      await axiosService.post('/auth/login', this.login)
-        .then(response => {
-          console.log(response)
-          const authStore = useAuthStore()
-          authStore.setToken(response.access_token)
-          router.push('/')
-        })
-        .catch(error => {
-          console.log(error)
-        })
+    performLogin(loginForm: FormInstance | undefined) {
+      if (!loginForm) return
+      loginForm.validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true;
+          authService.tryLogin(this.login)
+            .then(() => {
+              this.buttonLoading = false
+              router.push('/')
+            })
+            .catch(() => {
+              ElNotification({
+                title: 'Algo deu errado!',
+                message: "Ocorreu um problema ao tentar efetuar o login",
+                position: 'bottom-right',
+                type: 'error',
+              })
+            })
+            .finally(() => {
+              this.buttonLoading = false
+            })
+        }
+      })
+
     }
   }
 })
@@ -50,11 +76,11 @@ export default defineComponent({
       <el-image style="width: 200px; height: 100px" :src="logoUrl" fit="contain" />
       <div class="el-row input-region">
         <div class="el-col-20">
-          <el-form :model="login" label-width="auto" label-position="top" size="large">
-            <el-form-item label="E-mail" label-width="auto">
-              <el-input v-model="login.email" clearable></el-input>
+          <el-form ref="loginForm" :model="login" label-width="auto" label-position="top" size="large" :rules="rules" @submit="performLogin(loginForm)">
+            <el-form-item label="E-mail" label-width="auto" prop="email">
+              <el-input type="text" v-model="login.email" clearable></el-input>
             </el-form-item>
-            <el-form-item label="Senha" label-width="auto">
+            <el-form-item label="Senha" label-width="auto" prop="password">
               <el-input v-model="login.password" type="password" clearable></el-input>
             </el-form-item>
             <el-form-item label="Manter logado" label-width="auto">
@@ -69,7 +95,7 @@ export default defineComponent({
           </el-form>
         </div>
       </div>
-      <el-button type="primary" plain size="large" @click="performLogin">Login</el-button>
+      <el-button type="primary" plain size="large" @click="performLogin($refs.loginForm)" :loading="buttonLoading">Login</el-button>
     </div>
   </div>
 </template>
