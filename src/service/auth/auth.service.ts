@@ -4,14 +4,23 @@ import { useAuthStore } from '@/stores/auth'
 import type { AuthData } from '@/model/AuthData.model'
 
 export class AuthService {
-  private axiosInstance = AxiosService;
+  private readonly axiosInstance = AxiosService;
 
   constructor() {
     this.axiosInstance = AxiosService;
   }
 
   public checkToken(token: string) {
-    console.log(token);
+    this.axiosInstance.post<boolean>('/auth/check-token', { token })
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        const authStore = useAuthStore();
+        authStore.clearToken()
+        console.log(error)
+      })
+
   }
 
   public async tryLogin(loginData: LoginDto) {
@@ -24,6 +33,5 @@ export class AuthService {
       .catch((error) => {
         console.error(error)
       })
-
   }
 }
