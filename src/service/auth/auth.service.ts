@@ -27,7 +27,7 @@ export class AuthService {
     this.axiosInstance.post<AuthData>('/auth/login', loginData)
       .then((response) => {
         const authStore = useAuthStore()
-        authStore.setToken(response.accessToken)
+        authStore.setToken(response.accessToken, loginData.remember)
         authStore.setExpiration(response.expiresAt)
       })
       .catch((error) => {
