@@ -2,6 +2,7 @@
 import { defineComponent } from 'vue'
 import { Check, Close, Plus, Search } from '@element-plus/icons-vue'
 import { ClassificationService } from '@/service/vendor/classification.service'
+import type { FormInstance } from 'element-plus'
 
 const classificationService = new ClassificationService()
 
@@ -68,7 +69,12 @@ export default defineComponent({
           description: 'No. 189, Grove St, Los Angeles',
           isActive: true,
         },
-      ]
+      ],
+      rules: {
+        name: [
+          { required: true, message: 'Por favor informe o nome da classificação', trigger: 'blur' },
+        ],
+      }
     }
   },
   async mounted() {
@@ -85,11 +91,16 @@ export default defineComponent({
     deleteClassification(id: string) {
       console.log(id)
     },
-    saveNewClassification() {
-      console.log(this.formClassification)
-      if (!this.insertMany) {
-        this.centerDialogVisible = false
-      }
+    saveNewClassification(classificationForm: FormInstance | undefined) {
+      if (!classificationForm) return
+      classificationForm.validate((valid) => {
+        if (valid) {
+          console.log(this.formClassification)
+          if (!this.insertMany) {
+            this.centerDialogVisible = false
+          }
+        }
+      })
     },
     async loadClassifications() {
       const classificationList = await classificationService.getClassificationList();
@@ -160,10 +171,10 @@ export default defineComponent({
     align-center
   >
     <el-divider class="modal-title-divider"/>
-    <el-form :model="formClassification" label-position="top">
+    <el-form ref="classificationForm" :model="formClassification" label-position="top" :rules="rules">
       <el-row :gutter="10">
         <el-col :xs="24" :sm="24" :md="25" :lg="12" :xl="12">
-          <el-form-item label="Nome">
+          <el-form-item label="Nome" prop="name">
             <el-input v-model="formClassification.name" maxlength="50" show-word-limit clearable />
           </el-form-item>
         </el-col>
@@ -228,7 +239,7 @@ export default defineComponent({
           </el-col>
           <el-col :span="12">
             <el-button type="danger" plain @click="centerDialogVisible = false">Cancelar</el-button>
-            <el-button type="primary" plain @click="saveNewClassification" :icon="Check">
+            <el-button type="primary" plain @click="saveNewClassification($refs.classificationForm)" :icon="Check">
               Salvar
             </el-button>
           </el-col>
