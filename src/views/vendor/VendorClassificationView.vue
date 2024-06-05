@@ -1,125 +1,7 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
-import { Check, Close, Plus, Search } from '@element-plus/icons-vue'
-import { ClassificationService } from '@/service/vendor/classification.service'
-import type { FormInstance } from 'element-plus'
-
-const classificationService = new ClassificationService()
-
-export default defineComponent({
-  name: 'VendorClassificationView',
-  computed: {
-    Close() {
-      return Close
-    },
-    Check() {
-      return Check
-    },
-    Plus() {
-      return Plus
-    },
-    Search() {
-      return Search
-    }
-  },
-  data() {
-    return {
-      searchTerm: '',
-      searchTarget: '',
-      centerDialogVisible: false,
-      insertMany: false,
-      formClassification: {
-        name: '',
-        description: '',
-        isActive: true,
-        parentId: ''
-      },
-      mainClassificationList: [
-        {
-          value: 1,
-          label: 'Classificação Principal 1'
-        },
-        {
-          value: 2,
-          label: 'Classificação Principal 2'
-        },
-        {
-          value: 3,
-          label: 'Classificação Principal 3'
-        },
-      ],
-      tableData: [
-        {
-          name: 'Tom',
-          description: 'No. 189, Grove St, Los Angeles',
-          isActive: true,
-        },
-        {
-          name: 'Tom',
-          description: 'No. 189, Grove St, Los Angeles',
-          isActive: false,
-        },
-        {
-          name: 'Tom',
-          description: 'No. 189, Grove St, Los Angeles',
-          isActive: true,
-        },
-        {
-          name: 'Tom',
-          description: 'No. 189, Grove St, Los Angeles',
-          isActive: true,
-        },
-      ],
-      rules: {
-        name: [
-          { required: true, message: 'Por favor informe o nome da classificação', trigger: 'blur' },
-        ],
-      }
-    }
-  },
-  async mounted() {
-    await this.loadClassifications()
-  },
-  methods: {
-    performSearch() {
-      console.log(this.searchTerm)
-      console.log(this.searchTarget)
-    },
-    editClassification(id: string) {
-      console.log(id)
-    },
-    deleteClassification(id: string) {
-      console.log(id)
-    },
-    saveNewClassification(classificationForm: FormInstance | undefined) {
-      if (!classificationForm) return
-      classificationForm.validate((valid) => {
-        if (valid) {
-          console.log(this.formClassification)
-          if (!this.insertMany) {
-            this.centerDialogVisible = false
-          }
-        }
-      })
-    },
-    async loadClassifications() {
-      const classificationList = await classificationService.getClassificationList();
-      this.mainClassificationList = classificationList;
-    },
-    resetClassificationForm() {
-      this.$refs.classificationForm.resetFields()
-    }
-  }
-})
-</script>
-
 <template>
   <el-row justify="space-between">
     <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-      <el-input
-        v-model="searchTerm"
-        placeholder="Pesquisar"
-      >
+      <el-input v-model="searchTerm" placeholder="Pesquisar">
         <template #prepend>
           <el-select v-model="searchTarget" placeholder="Selecione" style="width: 115px" clearable>
             <el-option label="Nome" value="name" />
@@ -127,40 +9,30 @@ export default defineComponent({
           </el-select>
         </template>
         <template #append>
-          <el-button type="primary" :icon="Search" @click="performSearch" />
+          <el-button type="primary" :icon="SearchIcon" @click="performSearch" />
         </template>
       </el-input>
     </el-col>
-    <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8" >
-      <el-button style="float: right" type="primary" :icon="Plus" @click="centerDialogVisible = true">Cadastrar</el-button>
+    <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+      <el-button style="float: right" type="primary" :icon="PlusIcon" @click="centerDialogVisible = true">Cadastrar</el-button>
     </el-col>
   </el-row>
   <el-row>
     <el-divider />
     <el-col :span="24">
       <el-table ref="tableRef" row-key="date" :data="tableData" stripe>
-        <el-table-column
-          prop="name"
-          label="Nome"
-          sortable
-          width="180"
-          column-key="name"
-        />
+        <el-table-column prop="name" label="Nome" sortable width="180" column-key="name" />
         <el-table-column prop="description" label="Descrição" />
         <el-table-column prop="isActive" label="Ativo">
           <template #default="scope">
-            <el-tag
-              :type="scope.row.isActive ? 'success' : 'danger'"
-              disable-transitions
-            >{{ scope.row.isActive ? 'Sim' : 'Não' }}</el-tag
-            >
+            <el-tag :type="scope.row.isActive ? 'success' : 'danger'" disable-transitions>
+              {{ scope.row.isActive ? 'Sim' : 'Não' }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="Ações" align="center" header-align="center">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="editClassification(scope.row.id)">
-              Editar
-            </el-button>
+            <el-button type="primary" size="small" @click="editClassification(scope.row.id)">Editar</el-button>
             <el-button type="danger" size="small" @click="deleteClassification(scope.row.id)">Excluir</el-button>
           </template>
         </el-table-column>
@@ -172,10 +44,12 @@ export default defineComponent({
     title="Nova classificação"
     width="800"
     align-center
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
     @close="resetClassificationForm"
   >
-    <el-divider class="modal-title-divider"/>
-    <el-form ref="classificationForm" :model="formClassification" label-position="top" :rules="rules">
+    <el-divider class="modal-title-divider" />
+    <el-form ref="formClassificationRef" :model="formClassification" label-position="top" :rules="rules">
       <el-row :gutter="10">
         <el-col :xs="24" :sm="24" :md="25" :lg="12" :xl="12">
           <el-form-item label="Nome" prop="name">
@@ -184,15 +58,7 @@ export default defineComponent({
         </el-col>
         <el-col :xs="24" :sm="24" :md="25" :lg="12" :xl="12">
           <el-form-item label="Classificação principal">
-            <el-select
-              v-model="formClassification.parentId"
-              placeholder="Selecione"
-              clearable
-              no-data-text="Sem dados"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
-            >
+            <el-select v-model="formClassification.parentClassificationId" placeholder="Selecione" clearable no-data-text="Sem dados">
               <el-option
                 v-for="mainClassification in mainClassificationList"
                 :key="mainClassification.value"
@@ -216,15 +82,14 @@ export default defineComponent({
             <el-switch
               v-model="formClassification.isActive"
               inline-prompt
-              :active-icon="Check"
-              :inactive-icon="Close"
-            >
-            </el-switch>
+              :active-icon="CheckIcon"
+              :inactive-icon="CloseIcon"
+            />
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
-    <el-divider class="modal-footer-divider"/>
+    <el-divider class="modal-footer-divider" />
     <template #footer>
       <div class="dialog-footer">
         <el-row>
@@ -234,16 +99,21 @@ export default defineComponent({
                 <el-switch
                   v-model="insertMany"
                   inline-prompt
-                  :active-icon="Check"
-                  :inactive-icon="Close"
-                >
-                </el-switch>
+                  :active-icon="CheckIcon"
+                  :inactive-icon="CloseIcon"
+                />
               </el-form-item>
             </el-form>
           </el-col>
           <el-col :span="12">
             <el-button type="danger" plain @click="centerDialogVisible = false">Cancelar</el-button>
-            <el-button type="primary" plain @click="saveNewClassification($refs.classificationForm)" :icon="Check">
+            <el-button
+              type="primary"
+              plain
+              @click="saveNewClassification(formClassificationRef)"
+              :icon="CheckIcon"
+              :loading="buttonLoading"
+            >
               Salvar
             </el-button>
           </el-col>
@@ -252,6 +122,128 @@ export default defineComponent({
     </template>
   </el-dialog>
 </template>
+
+<script setup lang="ts">
+import { ref, reactive, computed, onMounted } from 'vue';
+import { Check, Close, Plus, Search } from '@element-plus/icons-vue';
+import { ClassificationService } from '@/service/vendor/classification.service';
+import { ElNotification, type FormInstance } from 'element-plus';
+import { VendorClassification } from '@/model/vendor/vendor-classification.model';
+import { CreateVendorClassificationDto } from '@/dto/vendor/create-vendor-classification.dto'
+
+const classificationService = new ClassificationService();
+
+const CloseIcon = computed(() => Close);
+const CheckIcon = computed(() => Check);
+const PlusIcon = computed(() => Plus);
+const SearchIcon = computed(() => Search);
+
+const buttonLoading = ref(false);
+const searchTerm = ref('');
+const searchTarget = ref('');
+const centerDialogVisible = ref(false);
+const insertMany = ref(false);
+const formClassification = reactive(new CreateVendorClassificationDto());
+const mainClassificationList = ref<SelectOption[]>([]);
+const tableData = ref([
+  {
+    name: 'Tom',
+    description: 'No. 189, Grove St, Los Angeles',
+    isActive: true,
+  },
+  {
+    name: 'Tom',
+    description: 'No. 189, Grove St, Los Angeles',
+    isActive: false,
+  },
+  {
+    name: 'Tom',
+    description: 'No. 189, Grove St, Los Angeles',
+    isActive: true,
+  },
+  {
+    name: 'Tom',
+    description: 'No. 189, Grove St, Los Angeles',
+    isActive: true,
+  },
+]);
+
+interface SelectOption {
+  label: string;
+  value: string
+}
+
+const rules = {
+  name: [
+    { required: true, message: 'Por favor informe o nome da classificação', trigger: 'blur' },
+  ],
+};
+
+const performSearch = () => {
+  console.log(searchTerm.value);
+  console.log(searchTarget.value);
+};
+
+const editClassification = (id: string) => {
+  console.log(id);
+};
+
+const deleteClassification = (id: string) => {
+  console.log(id);
+};
+
+const saveNewClassification = (classificationForm: FormInstance | undefined) => {
+  if (!classificationForm) return;
+  buttonLoading.value = true;
+  classificationForm.validate((valid) => {
+    if (valid) {
+      classificationService.createClassification(formClassification)
+        .then(() => {
+          buttonLoading.value = false;
+          clearClassificationForm();
+          ElNotification({
+            title: 'Sucesso!',
+            message: "A classificação foi salva!",
+            position: 'bottom-right',
+            type: 'success',
+          });
+          if (!insertMany.value) {
+            centerDialogVisible.value = false;
+          }
+        })
+        .catch(() => {
+          ElNotification({
+            title: 'Algo deu errado!',
+            message: "Ocorreu um problema ao tentar criar a classificação",
+            position: 'bottom-right',
+            type: 'error',
+          });
+        })
+        .finally(() => {
+          buttonLoading.value = false;
+        });
+    }
+  });
+};
+
+const loadClassifications = async () => {
+  mainClassificationList.value = await classificationService.getClassificationList();
+};
+
+const resetClassificationForm = () => {
+  (formClassificationRef.value as FormInstance).resetFields();
+};
+
+const clearClassificationForm = () => {
+  Object.assign(formClassification, new VendorClassification());
+};
+
+onMounted(async () => {
+  await loadClassifications();
+});
+
+const formClassificationRef = ref<FormInstance>();
+</script>
 
 <style scoped>
 .modal-title-divider {
