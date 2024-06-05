@@ -1,6 +1,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Check, Close, Plus, Search } from '@element-plus/icons-vue'
+import { ClassificationService } from '@/service/vendor/classification.service'
+
+const classificationService = new ClassificationService()
 
 export default defineComponent({
   name: 'VendorClassificationView',
@@ -68,6 +71,9 @@ export default defineComponent({
       ]
     }
   },
+  async mounted() {
+    await this.loadClassifications()
+  },
   methods: {
     performSearch() {
       console.log(this.searchTerm)
@@ -84,6 +90,10 @@ export default defineComponent({
       if (!this.insertMany) {
         this.centerDialogVisible = false
       }
+    },
+    async loadClassifications() {
+      const classificationList = await classificationService.getClassificationList();
+      this.mainClassificationList = classificationList;
     }
   }
 })
