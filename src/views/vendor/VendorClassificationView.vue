@@ -1,10 +1,16 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Plus, Search } from '@element-plus/icons-vue'
+import { Check, Close, Plus, Search } from '@element-plus/icons-vue'
 
 export default defineComponent({
   name: 'VendorClassificationView',
   computed: {
+    Close() {
+      return Close
+    },
+    Check() {
+      return Check
+    },
     Plus() {
       return Plus
     },
@@ -16,6 +22,28 @@ export default defineComponent({
     return {
       searchTerm: '',
       searchTarget: '',
+      centerDialogVisible: false,
+      insertMany: false,
+      formClassification: {
+        name: '',
+        description: '',
+        isActive: true,
+        parentId: ''
+      },
+      mainClassificationList: [
+        {
+          value: 1,
+          label: 'Classificação Principal 1'
+        },
+        {
+          value: 2,
+          label: 'Classificação Principal 2'
+        },
+        {
+          value: 3,
+          label: 'Classificação Principal 3'
+        },
+      ],
       tableData: [
         {
           name: 'Tom',
@@ -50,6 +78,12 @@ export default defineComponent({
     },
     deleteClassification(id: string) {
       console.log(id)
+    },
+    saveNewClassification() {
+      console.log(this.formClassification)
+      if (!this.insertMany) {
+        this.centerDialogVisible = false
+      }
     }
   }
 })
@@ -74,7 +108,7 @@ export default defineComponent({
       </el-input>
     </el-col>
     <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8" >
-      <el-button style="float: right" type="primary" :icon="Plus" @click="performSearch">Cadastrar</el-button>
+      <el-button style="float: right" type="primary" :icon="Plus" @click="centerDialogVisible = true">Cadastrar</el-button>
     </el-col>
   </el-row>
   <el-row>
@@ -109,8 +143,100 @@ export default defineComponent({
       </el-table>
     </el-col>
   </el-row>
+  <el-dialog
+    v-model="centerDialogVisible"
+    title="Nova classificação"
+    width="800"
+    align-center
+  >
+    <el-divider class="modal-title-divider"/>
+    <el-form :model="formClassification" label-position="top">
+      <el-row :gutter="10">
+        <el-col :xs="24" :sm="24" :md="25" :lg="12" :xl="12">
+          <el-form-item label="Nome">
+            <el-input v-model="formClassification.name" maxlength="50" show-word-limit clearable />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="24" :md="25" :lg="12" :xl="12">
+          <el-form-item label="Classificação principal">
+            <el-select
+              v-model="formClassification.parentId"
+              placeholder="Selecione"
+              clearable
+              no-data-text="Sem dados"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+            >
+              <el-option
+                v-for="mainClassification in mainClassificationList"
+                :key="mainClassification.value"
+                :label="mainClassification.label"
+                :value="mainClassification.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :xs="24" :sm="24" :md="25" :lg="24" :xl="24">
+          <el-form-item label="Descrição">
+            <el-input maxlength="255" show-word-limit v-model="formClassification.description" clearable />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :xs="24" :sm="24" :md="25" :lg="24" :xl="24">
+          <el-form-item label="Ativo?" label-width="auto" style="margin-bottom: 0">
+            <el-switch
+              v-model="formClassification.isActive"
+              inline-prompt
+              :active-icon="Check"
+              :inactive-icon="Close"
+            >
+            </el-switch>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <el-divider class="modal-footer-divider"/>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-row>
+          <el-col :span="12">
+            <el-form label-position="right">
+              <el-form-item label="Inserir vários?" class="insert-many-switch">
+                <el-switch
+                  v-model="insertMany"
+                  inline-prompt
+                  :active-icon="Check"
+                  :inactive-icon="Close"
+                >
+                </el-switch>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col :span="12">
+            <el-button type="danger" plain @click="centerDialogVisible = false">Cancelar</el-button>
+            <el-button type="primary" plain @click="saveNewClassification" :icon="Check">
+              Salvar
+            </el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped>
-
+.modal-title-divider {
+  margin-top: 0;
+}
+.modal-footer-divider {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+.insert-many-switch {
+  margin-bottom: 0;
+}
 </style>
