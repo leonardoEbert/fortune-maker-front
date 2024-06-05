@@ -33,7 +33,7 @@ export default defineComponent({
         <el-icon><location /></el-icon>
         <span>Estabelecimentos</span>
       </template>
-      <el-menu-item index="1-1" route="/vendor/classification">Categorias</el-menu-item>
+      <el-menu-item index="1-1" route="/vendor/classification">Classificações</el-menu-item>
       <el-menu-item index="1-2" route="/vendor">Locais</el-menu-item>
       <el-menu-item-group title="Group Two">
         <el-menu-item index="1-3">item three</el-menu-item>
