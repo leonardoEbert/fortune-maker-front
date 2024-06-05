@@ -105,6 +105,9 @@ export default defineComponent({
     async loadClassifications() {
       const classificationList = await classificationService.getClassificationList();
       this.mainClassificationList = classificationList;
+    },
+    resetClassificationForm() {
+      this.$refs.classificationForm.resetFields()
     }
   }
 })
@@ -169,6 +172,7 @@ export default defineComponent({
     title="Nova classificação"
     width="800"
     align-center
+    @close="resetClassificationForm"
   >
     <el-divider class="modal-title-divider"/>
     <el-form ref="classificationForm" :model="formClassification" label-position="top" :rules="rules">
