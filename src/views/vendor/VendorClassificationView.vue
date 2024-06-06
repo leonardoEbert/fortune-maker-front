@@ -142,6 +142,7 @@ import { ClassificationService } from '@/service/vendor/classification.service';
 import { ElNotification, type FormInstance } from 'element-plus';
 import { VendorClassification } from '@/model/vendor/vendor-classification.model';
 import { CreateVendorClassificationDto } from '@/dto/vendor/create-vendor-classification.dto'
+import type { VendorClassificationPaginationParams } from '@/model/vendor/vendor-classification-pagination-params.model'
 
 const classificationService = new ClassificationService();
 
@@ -258,7 +259,22 @@ const getClassificationsCount = async () => {
 }
 
 const getClassificationsPaginated = async () => {
-  const classifications = await classificationService.getClassificationsByPage();
+  const paginationParams: VendorClassificationPaginationParams = {
+    currentPage: currentPage.value,
+    pageSize: pageSize.value,
+  }
+  classificationService.getClassificationsByPage(paginationParams)
+    .then((response) => {
+      console.log(response)
+    })
+    .catch(() => {
+      ElNotification({
+        title: 'Algo deu errado!',
+        message: "Ocorreu um problema ao tentar buscar a página de classificações",
+        position: 'bottom-right',
+        type: 'error',
+      });
+    })
 }
 
 const loadMainClassifications = async () => {
