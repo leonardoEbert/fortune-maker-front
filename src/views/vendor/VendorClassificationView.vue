@@ -255,11 +255,13 @@ const clearClassificationForm = () => {
   Object.assign(formClassification, new VendorClassification());
 };
 
-const handleSizeChange = (val: number) => {
-  console.log(`${val} items per page`)
+const handleSizeChange = async (newPageSize: number) => {
+  pageSize.value = newPageSize
+  await getClassificationsPaginated();
 }
-const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`)
+const handleCurrentChange = async (newPage: number) => {
+  currentPage.value = newPage;
+  await getClassificationsPaginated();
 }
 
 onMounted(async () => {
