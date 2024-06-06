@@ -28,4 +28,9 @@ export class ClassificationService {
   public async createClassification(classification: CreateVendorClassificationDto) {
     return await this.axiosInstance.post<VendorClassification>('/classification', classification);
   }
+
+  public async getClassificationsCount() {
+    return await this.axiosInstance.get<number>('/classification/count');
+  }
+
 }
