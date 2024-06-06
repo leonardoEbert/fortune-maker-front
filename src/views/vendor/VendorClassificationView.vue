@@ -121,6 +121,18 @@
       </div>
     </template>
   </el-dialog>
+  <el-divider />
+  <el-row :gutter="20" justify="center">
+    <el-pagination
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      :background="true"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="classificationCount"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+  </el-row>
 </template>
 
 <script setup lang="ts">
@@ -145,6 +157,9 @@ const centerDialogVisible = ref(false);
 const insertMany = ref(false);
 const formClassification = reactive(new CreateVendorClassificationDto());
 const mainClassificationList = ref<SelectOption[]>([]);
+const classificationCount = ref(0);
+const pageSize = ref(10);
+const currentPage = ref(1);
 const tableData = ref([
   {
     name: 'Tom',
@@ -221,12 +236,21 @@ const saveNewClassification = (classificationForm: FormInstance | undefined) => 
         })
         .finally(() => {
           buttonLoading.value = false;
+          loadMainClassifications();
         });
     }
   });
 };
 
-const loadClassifications = async () => {
+const getClassificationsCount = async () => {
+  classificationCount.value = await classificationService.getClassificationsCount();
+}
+
+const getClassificationsPaginated = async () => {
+  const classifications = await classificationService.getClassificationsByPage();
+}
+
+const loadMainClassifications = async () => {
   mainClassificationList.value = await classificationService.getClassificationList();
 };
 
@@ -238,8 +262,17 @@ const clearClassificationForm = () => {
   Object.assign(formClassification, new VendorClassification());
 };
 
+const handleSizeChange = (val: number) => {
+  console.log(`${val} items per page`)
+}
+const handleCurrentChange = (val: number) => {
+  console.log(`current page: ${val}`)
+}
+
 onMounted(async () => {
-  await loadClassifications();
+  await loadMainClassifications();
+  await getClassificationsPaginated();
+  await getClassificationsCount();
 });
 
 const formClassificationRef = ref<FormInstance>();

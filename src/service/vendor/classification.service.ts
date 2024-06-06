@@ -33,4 +33,7 @@ export class ClassificationService {
     return await this.axiosInstance.get<number>('/classification/count');
   }
 
+  public async getClassificationsByPage() {
+
+  }
 }
