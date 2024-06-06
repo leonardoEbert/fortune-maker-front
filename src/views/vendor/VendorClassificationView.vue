@@ -243,7 +243,18 @@ const saveNewClassification = (classificationForm: FormInstance | undefined) => 
 };
 
 const getClassificationsCount = async () => {
-  classificationCount.value = await classificationService.getClassificationsCount();
+  classificationService.getClassificationsCount()
+    .then((count) => {
+      classificationCount.value = count
+    })
+    .catch(() => {
+      ElNotification({
+        title: 'Algo deu errado!',
+        message: "Ocorreu um problema ao tentar buscar a contagem total de  classificações",
+        position: 'bottom-right',
+        type: 'error',
+      });
+    })
 }
 
 const getClassificationsPaginated = async () => {
