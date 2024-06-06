@@ -1,6 +1,5 @@
 import AxiosService from '@/common/axios.service'
 import type { VendorClassification } from '@/model/vendor/vendor-classification.model'
-import type { CreateVendorClassificationDto } from '@/dto/vendor/create-vendor-classification.dto'
 import type { VendorClassificationPaginationParams } from '@/model/vendor/vendor-classification-pagination-params.model'
 import type { PaginatedResponse } from '@/types/paginated-response.type'
 
@@ -27,12 +26,8 @@ export class ClassificationService {
     return returnList;
   }
 
-  public async createClassification(classification: CreateVendorClassificationDto) {
+  public async createClassification(classification: VendorClassification) {
     return await this.axiosInstance.post<VendorClassification>('/classification', classification);
-  }
-
-  public async getClassificationsCount() {
-    return await this.axiosInstance.get<number>('/classification/count');
   }
 
   public async getClassificationsByPage(paginationParams: VendorClassificationPaginationParams) {
@@ -41,5 +36,9 @@ export class ClassificationService {
 
   public async deleteClassification(id: string) {
     return await this.axiosInstance.delete(`/classification/${id}`);
+  }
+
+  public async updateClassification(classification: VendorClassification) {
+    return await this.axiosInstance.patch(`/classification/${classification.id}`, classification);
   }
 }

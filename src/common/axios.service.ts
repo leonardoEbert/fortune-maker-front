@@ -70,6 +70,19 @@ class AxiosService {
     const response: AxiosResponse<T> = await this.instance.delete(url, config);
     return response.data;
   }
+
+  public async patch<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<T> {
+    const response: AxiosResponse<T> = await this.instance.patch(
+      url,
+      data,
+      config
+    );
+    return response.data;
+  }
 }
 
 export default  new AxiosService();

@@ -4,7 +4,7 @@ export class VendorClassification {
   description?: string = '';
   isActive: boolean = false;
   parentClassification?: VendorClassification = {} as VendorClassification;
-  subClassification?: VendorClassification[] = [];
+  subClassifications?: VendorClassification[] = [];
   createdAt: Date = new Date();
   updatedAt: Date = new Date();
   deletedAt?: Date;

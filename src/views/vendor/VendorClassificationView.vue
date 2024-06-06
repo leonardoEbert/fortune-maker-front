@@ -56,14 +56,14 @@
     <el-divider class="modal-title-divider" />
     <el-form ref="formClassificationRef" :model="formClassification" label-position="top" :rules="rules">
       <el-row :gutter="10">
-        <el-col :xs="24" :sm="24" :md="25" :lg="12" :xl="12">
+        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
           <el-form-item label="Nome" prop="name">
             <el-input v-model="formClassification.name" maxlength="50" show-word-limit clearable />
           </el-form-item>
         </el-col>
-        <el-col :xs="24" :sm="24" :md="25" :lg="12" :xl="12">
-          <el-form-item label="Classificação principal">
-            <el-select v-model="formClassification.parentClassificationId" placeholder="Selecione" clearable no-data-text="Sem dados">
+        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
+          <el-form-item label="Classificação principal" prop="parentClassification">
+            <el-select v-model="formClassification.parentClassification" placeholder="Selecione" clearable no-data-text="Sem dados" @change="handleParent">
               <el-option
                 v-for="mainClassification in mainClassificationList"
                 :key="mainClassification.value"
@@ -75,15 +75,15 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :xs="24" :sm="24" :md="25" :lg="24" :xl="24">
-          <el-form-item label="Descrição">
+        <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <el-form-item label="Descrição" prop="description">
             <el-input maxlength="255" show-word-limit v-model="formClassification.description" clearable />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
-        <el-col :xs="24" :sm="24" :md="25" :lg="24" :xl="24">
-          <el-form-item label="Ativo?" label-width="auto" style="margin-bottom: 0">
+        <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <el-form-item label="Ativo?" label-width="auto" style="margin-bottom: 0" prop="isActive">
             <el-switch
               v-model="formClassification.isActive"
               inline-prompt
@@ -115,7 +115,7 @@
             <el-button
               type="primary"
               plain
-              @click="saveNewClassification(formClassificationRef)"
+              @click="saveClassification(formClassificationRef)"
               :icon="CheckIcon"
               :loading="buttonLoading"
             >
@@ -141,12 +141,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
-import { Check, Close, Plus, Search } from '@element-plus/icons-vue';
-import { ClassificationService } from '@/service/vendor/classification.service';
-import { ElNotification, type FormInstance } from 'element-plus';
-import { VendorClassification } from '@/model/vendor/vendor-classification.model';
-import { CreateVendorClassificationDto } from '@/dto/vendor/create-vendor-classification.dto'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { Check, Close, Plus, Search } from '@element-plus/icons-vue'
+import { ClassificationService } from '@/service/vendor/classification.service'
+import { ElNotification, type FormInstance } from 'element-plus'
+import { VendorClassification } from '@/model/vendor/vendor-classification.model'
 import type { VendorClassificationPaginationParams } from '@/model/vendor/vendor-classification-pagination-params.model'
 
 const classificationService = new ClassificationService();
@@ -161,7 +160,7 @@ const searchTerm = ref('');
 const searchTarget = ref('');
 const centerDialogVisible = ref(false);
 const insertMany = ref(false);
-const formClassification = reactive(new CreateVendorClassificationDto());
+const formClassification = reactive<VendorClassification>(new VendorClassification());
 const mainClassificationList = ref<SelectOption[]>([]);
 const classificationCount = ref(0);
 const pageSize = ref(10);
@@ -184,8 +183,24 @@ const performSearch = () => {
   console.log(searchTarget.value);
 };
 
+const handleParent = (parent) => {
+  formClassification.parentClassification = parent;
+}
+
 const editClassification = (id: string) => {
-  console.log(id);
+  const classification = tableData.value.find((classification) => classification.id === id);
+  Object.keys(classification).forEach((key) => {
+    console.log(key)
+    console.log(classification[key])
+    console.log(typeof classification[key])
+    if (classification[key] && typeof classification[key] === 'object' ) {
+      formClassification[key] = classification[key].id;
+    } else {
+      formClassification[key] = classification[key]
+    }
+  });
+
+  centerDialogVisible.value = true;
 };
 
 const deleteClassification = (id: string) => {
@@ -209,40 +224,81 @@ const deleteClassification = (id: string) => {
     })
 };
 
-const saveNewClassification = (classificationForm: FormInstance | undefined) => {
+const saveClassification = (classificationForm: FormInstance | undefined) => {
   if (!classificationForm) return;
   buttonLoading.value = true;
   classificationForm.validate((valid) => {
     if (valid) {
-      classificationService.createClassification(formClassification)
-        .then(() => {
-          buttonLoading.value = false;
-          clearClassificationForm();
-          ElNotification({
-            title: 'Sucesso!',
-            message: "A classificação foi salva!",
-            position: 'bottom-right',
-            type: 'success',
-          });
-          if (!insertMany.value) {
-            centerDialogVisible.value = false;
-          }
-        })
-        .catch(() => {
-          ElNotification({
-            title: 'Algo deu errado!',
-            message: "Ocorreu um problema ao tentar criar a classificação",
-            position: 'bottom-right',
-            type: 'error',
-          });
-        })
-        .finally(() => {
-          buttonLoading.value = false;
-          loadMainClassifications();
-        });
+      if (formClassification.id && formClassification.id === '') {
+        delete formClassification.id
+        createClassification()
+      } else {
+       updateClassification();
+      }
     }
   });
 };
+
+const createClassification = () => {
+  console.log(formClassification)
+  classificationService.createClassification(formClassification)
+    .then(() => {
+      buttonLoading.value = false;
+      clearClassificationForm();
+      ElNotification({
+        title: 'Sucesso!',
+        message: "A classificação foi salva!",
+        position: 'bottom-right',
+        type: 'success',
+      });
+      if (!insertMany.value) {
+        centerDialogVisible.value = false;
+      }
+    })
+    .catch(() => {
+      ElNotification({
+        title: 'Algo deu errado!',
+        message: "Ocorreu um problema ao tentar criar a classificação",
+        position: 'bottom-right',
+        type: 'error',
+      });
+    })
+    .finally(() => {
+      buttonLoading.value = false;
+      loadMainClassifications();
+    });
+}
+
+const updateClassification = () => {
+  console.log(formClassification)
+  delete formClassification.subClassifications
+  classificationService.updateClassification(formClassification)
+    .then(() => {
+      buttonLoading.value = false;
+      clearClassificationForm();
+      ElNotification({
+        title: 'Sucesso!',
+        message: "A classificação foi salva!",
+        position: 'bottom-right',
+        type: 'success',
+      });
+      if (!insertMany.value) {
+        centerDialogVisible.value = false;
+      }
+    })
+    .catch(() => {
+      ElNotification({
+        title: 'Algo deu errado!',
+        message: "Ocorreu um problema ao tentar editar a classificação",
+        position: 'bottom-right',
+        type: 'error',
+      });
+    })
+    .finally(() => {
+      buttonLoading.value = false;
+      loadMainClassifications();
+    });
+}
 
 const getClassificationsPaginated = async () => {
   const paginationParams: VendorClassificationPaginationParams = {
