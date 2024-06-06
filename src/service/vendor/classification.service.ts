@@ -1,6 +1,7 @@
 import AxiosService from '@/common/axios.service'
 import type { VendorClassification } from '@/model/vendor/vendor-classification.model'
 import type { CreateVendorClassificationDto } from '@/dto/vendor/create-vendor-classification.dto'
+import type { VendorClassificationPaginationParams } from '@/model/vendor/vendor-classification-pagination-params.model'
 
 export class ClassificationService {
   private readonly axiosInstance = AxiosService;
@@ -33,7 +34,7 @@ export class ClassificationService {
     return await this.axiosInstance.get<number>('/classification/count');
   }
 
-  public async getClassificationsByPage() {
-
+  public async getClassificationsByPage(paginationParams: VendorClassificationPaginationParams) {
+    return await this.axiosInstance.get<VendorClassification[]>('/classification/paginated', { params: paginationParams })
   }
 }
