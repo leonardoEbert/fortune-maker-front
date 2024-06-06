@@ -65,6 +65,11 @@ class AxiosService {
     );
     return response.data;
   }
+
+  public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.instance.delete(url, config);
+    return response.data;
+  }
 }
 
 export default  new AxiosService();

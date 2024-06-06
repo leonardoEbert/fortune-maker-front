@@ -33,7 +33,12 @@
         <el-table-column fixed="right" label="Ações" align="center" header-align="center">
           <template #default="scope">
             <el-button type="primary" size="small" @click="editClassification(scope.row.id)">Editar</el-button>
-            <el-button type="danger" size="small" @click="deleteClassification(scope.row.id)">Excluir</el-button>
+            <el-popconfirm title="Tem certeza que deseja excluir essa classificação?" width="300" @confirm="deleteClassification(scope.row.id)">
+              <template #reference>
+                <el-button type="danger" size="small">Excluir</el-button>
+              </template>
+            </el-popconfirm>
+
           </template>
         </el-table-column>
       </el-table>
@@ -184,7 +189,24 @@ const editClassification = (id: string) => {
 };
 
 const deleteClassification = (id: string) => {
-  console.log(id);
+  classificationService.deleteClassification(id)
+    .then(() => {
+      getClassificationsPaginated();
+      ElNotification({
+        title: 'Sucesso!',
+        message: "A classificação foi excluída!",
+        position: 'bottom-right',
+        type: 'success',
+      });
+    })
+    .catch(() => {
+      ElNotification({
+        title: 'Algo deu errado!',
+        message: "Ocorreu um problema ao tentar excluir a classificação",
+        position: 'bottom-right',
+        type: 'error',
+      });
+    })
 };
 
 const saveNewClassification = (classificationForm: FormInstance | undefined) => {

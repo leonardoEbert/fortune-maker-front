@@ -36,6 +36,10 @@ export class ClassificationService {
   }
 
   public async getClassificationsByPage(paginationParams: VendorClassificationPaginationParams) {
-    return await this.axiosInstance.get<PaginatedResponse<VendorClassification>>('/classification/paginated', { params: paginationParams })
+    return await this.axiosInstance.get<PaginatedResponse<VendorClassification>>('/classification/paginated', { params: paginationParams });
+  }
+
+  public async deleteClassification(id: string) {
+    return await this.axiosInstance.delete(`/classification/${id}`);
   }
 }
