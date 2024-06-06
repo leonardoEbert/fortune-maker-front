@@ -20,7 +20,7 @@
   <el-row>
     <el-divider />
     <el-col :span="24">
-      <el-table ref="tableRef" row-key="date" :data="tableData" stripe>
+      <el-table ref="tableRef" row-key="id" :data="tableData" stripe>
         <el-table-column prop="name" label="Nome" sortable width="180" column-key="name" />
         <el-table-column prop="description" label="Descrição" />
         <el-table-column prop="isActive" label="Ativo">
@@ -161,28 +161,7 @@ const mainClassificationList = ref<SelectOption[]>([]);
 const classificationCount = ref(0);
 const pageSize = ref(10);
 const currentPage = ref(1);
-const tableData = ref([
-  {
-    name: 'Tom',
-    description: 'No. 189, Grove St, Los Angeles',
-    isActive: true,
-  },
-  {
-    name: 'Tom',
-    description: 'No. 189, Grove St, Los Angeles',
-    isActive: false,
-  },
-  {
-    name: 'Tom',
-    description: 'No. 189, Grove St, Los Angeles',
-    isActive: true,
-  },
-  {
-    name: 'Tom',
-    description: 'No. 189, Grove St, Los Angeles',
-    isActive: true,
-  },
-]);
+const tableData = ref<VendorClassification[]>([]);
 
 interface SelectOption {
   label: string;
@@ -243,21 +222,6 @@ const saveNewClassification = (classificationForm: FormInstance | undefined) => 
   });
 };
 
-const getClassificationsCount = async () => {
-  classificationService.getClassificationsCount()
-    .then((count) => {
-      classificationCount.value = count
-    })
-    .catch(() => {
-      ElNotification({
-        title: 'Algo deu errado!',
-        message: "Ocorreu um problema ao tentar buscar a contagem total de  classificações",
-        position: 'bottom-right',
-        type: 'error',
-      });
-    })
-}
-
 const getClassificationsPaginated = async () => {
   const paginationParams: VendorClassificationPaginationParams = {
     currentPage: currentPage.value,
@@ -265,7 +229,9 @@ const getClassificationsPaginated = async () => {
   }
   classificationService.getClassificationsByPage(paginationParams)
     .then((response) => {
-      console.log(response)
+      tableData.value = response.data
+      classificationCount.value = +response.total
+      currentPage.value = +response.page
     })
     .catch(() => {
       ElNotification({
@@ -299,7 +265,6 @@ const handleCurrentChange = (val: number) => {
 onMounted(async () => {
   await loadMainClassifications();
   await getClassificationsPaginated();
-  await getClassificationsCount();
 });
 
 const formClassificationRef = ref<FormInstance>();
