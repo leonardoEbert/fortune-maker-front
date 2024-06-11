@@ -190,9 +190,6 @@ const handleParent = (parent) => {
 const editClassification = (id: string) => {
   const classification = tableData.value.find((classification) => classification.id === id);
   Object.keys(classification).forEach((key) => {
-    console.log(key)
-    console.log(classification[key])
-    console.log(typeof classification[key])
     if (classification[key] && typeof classification[key] === 'object' ) {
       formClassification[key] = classification[key].id;
     } else {
@@ -229,8 +226,8 @@ const saveClassification = (classificationForm: FormInstance | undefined) => {
   buttonLoading.value = true;
   classificationForm.validate((valid) => {
     if (valid) {
-      if (formClassification.id && formClassification.id === '') {
-        delete formClassification.id
+      if (formClassification.id === '') {
+        delete formClassification?.id
         createClassification()
       } else {
        updateClassification();
@@ -240,7 +237,6 @@ const saveClassification = (classificationForm: FormInstance | undefined) => {
 };
 
 const createClassification = () => {
-  console.log(formClassification)
   classificationService.createClassification(formClassification)
     .then(() => {
       buttonLoading.value = false;
@@ -266,11 +262,11 @@ const createClassification = () => {
     .finally(() => {
       buttonLoading.value = false;
       loadMainClassifications();
+      getClassificationsPaginated();
     });
 }
 
 const updateClassification = () => {
-  console.log(formClassification)
   delete formClassification.subClassifications
   classificationService.updateClassification(formClassification)
     .then(() => {
@@ -297,6 +293,7 @@ const updateClassification = () => {
     .finally(() => {
       buttonLoading.value = false;
       loadMainClassifications();
+      getClassificationsPaginated();
     });
 }
 
