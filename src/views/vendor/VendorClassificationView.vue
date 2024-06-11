@@ -189,13 +189,15 @@ const handleParent = (parent: VendorClassification) => {
 
 const editClassification = (id: string) => {
   const classification = tableData.value.find((classification) => classification.id === id);
-  Object.keys(classification).forEach((key) => {
-    if (classification[key] && typeof classification[key] === 'object' ) {
-      formClassification[key] = classification[key].id;
-    } else {
-      formClassification[key] = classification[key]
-    }
-  });
+  if (classification) {
+    Object.keys(classification).forEach((key: string) => {
+      if (classification[key] && typeof classification[key] === 'object' ) {
+        formClassification[key] = classification[key].id;
+      } else {
+        formClassification[key] = classification[key]
+      }
+    });
+  }
 
   centerDialogVisible.value = true;
 };
@@ -227,7 +229,7 @@ const saveClassification = (classificationForm: FormInstance | undefined) => {
   classificationForm.validate((valid) => {
     if (valid) {
       if (formClassification.id === '') {
-        delete formClassification?.id
+        delete formClassification.id
         createClassification()
       } else {
        updateClassification();
