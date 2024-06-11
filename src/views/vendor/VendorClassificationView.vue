@@ -183,7 +183,7 @@ const performSearch = () => {
   console.log(searchTarget.value);
 };
 
-const handleParent = (parent) => {
+const handleParent = (parent: VendorClassification) => {
   formClassification.parentClassification = parent;
 }
 
