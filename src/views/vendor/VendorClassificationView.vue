@@ -9,7 +9,7 @@
           </el-select>
         </template>
         <template #append>
-          <el-button type="primary" :icon="SearchIcon" @click="performSearch" />
+          <el-button type="primary" :icon="SearchIcon" @click="getClassificationsPaginated" />
         </template>
       </el-input>
     </el-col>
@@ -178,11 +178,6 @@ const rules = {
   ],
 };
 
-const performSearch = () => {
-  console.log(searchTerm.value);
-  console.log(searchTarget.value);
-};
-
 const handleParent = (parent: VendorClassification) => {
   formClassification.parentClassification = parent;
 }
@@ -303,6 +298,8 @@ const getClassificationsPaginated = async () => {
   const paginationParams: VendorClassificationPaginationParams = {
     currentPage: currentPage.value,
     pageSize: pageSize.value,
+    searchField: searchTarget.value,
+    searchTerm: searchTerm.value,
   }
   classificationService.getClassificationsByPage(paginationParams)
     .then((response) => {
