@@ -37,7 +37,6 @@ export default defineComponent({
           { required: true, message: 'Por favor informe a senha', trigger: 'blur' }
         ]
       }
-
     }
   },
   methods: {

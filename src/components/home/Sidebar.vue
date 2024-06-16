@@ -31,13 +31,10 @@ export default defineComponent({
     <el-sub-menu index="1">
       <template #title>
         <el-icon><location /></el-icon>
-        <span>Navigator One</span>
+        <span>Estabelecimentos</span>
       </template>
-      <el-menu-item-group>
-        <template #title><span>Group One</span></template>
-        <el-menu-item index="1-1">item one</el-menu-item>
-        <el-menu-item index="1-2">item two</el-menu-item>
-      </el-menu-item-group>
+      <el-menu-item index="1-1" route="/vendor/classification">Classificações</el-menu-item>
+      <el-menu-item index="1-2" route="/vendor">Locais</el-menu-item>
       <el-menu-item-group title="Group Two">
         <el-menu-item index="1-3">item three</el-menu-item>
       </el-menu-item-group>
