@@ -17,7 +17,6 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('remember', `${remember}`);
     },
     clearToken() {
-      console.log('clear token');
       this.token = '';
       this.isLoggedIn = false;
       this.expiresAt = Date.now();
