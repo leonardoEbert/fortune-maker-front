@@ -1,7 +1,7 @@
 <template>
   <el-row justify="space-between">
     <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-      <el-input v-model="searchTerm" placeholder="Pesquisar">
+      <el-input v-model="searchTerm" placeholder="Pesquisar" clearable>
         <template #prepend>
           <el-select v-model="searchTarget" placeholder="Selecione" style="width: 115px" clearable>
             <el-option label="Nome" value="name" />
@@ -14,7 +14,7 @@
       </el-input>
     </el-col>
     <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-      <el-button style="float: right" type="primary" :icon="PlusIcon" @click="centerDialogVisible = true">Cadastrar</el-button>
+      <el-button style="float: right" type="primary" :icon="PlusIcon" @click="openModal">Cadastrar</el-button>
     </el-col>
   </el-row>
   <el-row>
@@ -111,7 +111,7 @@
             </el-form>
           </el-col>
           <el-col :span="12">
-            <el-button type="danger" plain @click="centerDialogVisible = false">Cancelar</el-button>
+            <el-button type="danger" plain @click="closeModal">Cancelar</el-button>
             <el-button
               type="primary"
               plain
@@ -180,6 +180,18 @@ const rules = {
 
 const handleParent = (parent: VendorClassification) => {
   formClassification.parentClassification = parent;
+}
+
+const openModal = () => {
+  clearClassificationForm();
+  centerDialogVisible.value = true
+  formClassification.parentClassification = undefined;
+}
+
+const closeModal = () => {
+  clearClassificationForm();
+  centerDialogVisible.value = false;
+  formClassification.parentClassification = undefined;
 }
 
 const editClassification = (id: string) => {
@@ -260,6 +272,7 @@ const createClassification = () => {
       buttonLoading.value = false;
       loadMainClassifications();
       getClassificationsPaginated();
+      clearClassificationForm();
     });
 }
 
@@ -291,6 +304,7 @@ const updateClassification = () => {
       buttonLoading.value = false;
       loadMainClassifications();
       getClassificationsPaginated();
+      clearClassificationForm();
     });
 }
 
