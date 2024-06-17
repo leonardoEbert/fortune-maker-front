@@ -1,14 +1,3 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
-import MenuSidebar from '@/components/home/Sidebar.vue'
-import HomeHeader from '@/components/home/HomeHeader.vue'
-
-export default defineComponent({
-  name: 'HomeView',
-  components: { HomeHeader, MenuSidebar },
-})
-</script>
-
 <template>
   <div class="el-row">
     <el-container class="el-col-24">
@@ -28,6 +17,11 @@ export default defineComponent({
     </el-container>
   </div>
 </template>
+
+<script lang="ts" setup>
+import MenuSidebar from '@/components/home/Sidebar.vue'
+import HomeHeader from '@/components/home/HomeHeader.vue'
+</script>
 
 <style scoped>
 .home-header {
