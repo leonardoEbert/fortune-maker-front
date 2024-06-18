@@ -145,9 +145,10 @@ import { computed, reactive, ref } from 'vue'
 import { Check, Close, Plus, Search } from '@element-plus/icons-vue';
 import { VendorService } from '@/service/vendor/vendor.service'
 import { Vendor } from '@/model/vendor/vendor.model'
-import type { FormInstance } from 'element-plus'
+import { ElNotification, type FormInstance } from 'element-plus'
 import { VendorClassification } from '@/model/vendor/vendor-classification.model'
 import type { SelectOption } from '@/interfaces/select-option.interface'
+import type { RequestPaginationParams } from '@/model/http/request-pagination-params.model'
 
 const vendorService = new VendorService();
 
@@ -176,7 +177,26 @@ const rules = {
 };
 
 const getVendorsPaginated = async () => {
-  await vendorService.getVendorsList();
+  const paginationParams: RequestPaginationParams = {
+    currentPage: currentPage.value,
+    pageSize: pageSize.value,
+    searchField: searchTarget.value,
+    searchTerm: searchTerm.value,
+  }
+  await vendorService.getVendorsByPage(paginationParams)
+    .then((response) => {
+      tableData.value = response.data
+      classificationCount.value = +response.total
+      currentPage.value = +response.page
+    })
+    .catch(() => {
+      ElNotification({
+        title: 'Algo deu errado!',
+        message: "Ocorreu um problema ao tentar buscar a página de estabelecimentos!",
+        position: 'bottom-right',
+        type: 'error',
+      });
+    });
 }
 
 const openModal = () => {
