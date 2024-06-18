@@ -147,6 +147,7 @@ import { ClassificationService } from '@/service/vendor/classification.service'
 import { ElNotification, type FormInstance } from 'element-plus'
 import { VendorClassification } from '@/model/vendor/vendor-classification.model'
 import type { VendorClassificationPaginationParams } from '@/model/vendor/vendor-classification-pagination-params.model'
+import type { SelectOption } from '@/interfaces/select-option.interface'
 
 const classificationService = new ClassificationService();
 
@@ -166,11 +167,6 @@ const classificationCount = ref(0);
 const pageSize = ref(10);
 const currentPage = ref(1);
 const tableData = ref<VendorClassification[]>([]);
-
-interface SelectOption {
-  label: string;
-  value: string
-}
 
 const rules = {
   name: [
