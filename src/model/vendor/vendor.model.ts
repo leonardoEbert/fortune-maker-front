@@ -8,5 +8,5 @@ export class Vendor {
   createdAt: Date = new Date();
   updatedAt: Date = new Date();
   deletedAt?: Date;
-  classifications: VendorClassification[] = [];
+  classifications?: VendorClassification[] = [];
 }
