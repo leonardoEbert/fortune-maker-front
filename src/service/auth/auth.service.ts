@@ -1,7 +1,7 @@
 import AxiosService from '@/common/axios.service'
 import type { LoginDto } from '@/dto/login.dto'
 import { useAuthStore } from '@/stores/auth'
-import type { AuthData } from '@/model/AuthData.model'
+import type { AuthData } from '@/model/auth-data.model'
 
 export class AuthService {
   private readonly axiosInstance = AxiosService;
