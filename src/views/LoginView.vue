@@ -1,81 +1,10 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
-import { Check, Close } from '@element-plus/icons-vue'
-import logoFM from '@/assets/logo.png'
-import router from '@/router'
-import { AuthService } from '@/service/auth/auth.service'
-import { ElNotification, type FormInstance } from 'element-plus'
-
-const authService = new AuthService()
-
-export default defineComponent({
-  name: 'LoginView',
-  computed: {
-    Close() {
-      return Close
-    },
-    Check() {
-      return Check
-    }
-  },
-  data() {
-    return {
-      message: 'Hello World!',
-      login: {
-        email: '',
-        password: '',
-        remember: false
-      },
-      logoUrl: logoFM,
-      buttonLoading: false,
-      rules: {
-        email: [
-          { required: true, message: 'Por favor informe o seu e-mail', trigger: 'blur' },
-          { type: 'email', message: 'Por favor informe um endereço de e-mail válido', trigger: ['blur', 'change'] }
-        ],
-        password: [
-          { required: true, message: 'Por favor informe a senha', trigger: 'blur' }
-        ]
-      }
-    }
-  },
-  methods: {
-    performLogin(loginForm: FormInstance | undefined) {
-      if (!loginForm) return
-      loginForm.validate((valid) => {
-        if (valid) {
-          this.buttonLoading = true;
-          authService.tryLogin(this.login)
-            .then(() => {
-              this.buttonLoading = false
-              router.push('/')
-            })
-            .catch(() => {
-              ElNotification({
-                title: 'Algo deu errado!',
-                message: "Ocorreu um problema ao tentar efetuar o login",
-                position: 'bottom-right',
-                type: 'error',
-              })
-            })
-            .finally(() => {
-              this.buttonLoading = false
-            })
-        }
-      })
-
-    }
-  }
-})
-</script>
-
 <template>
   <div class="el-container login-main el-row">
     <div class="login-form el-col-6">
       <el-image style="width: 200px; height: 100px" :src="logoUrl" fit="contain" />
       <div class="el-row input-region">
         <div class="el-col-20">
-          <el-form ref="loginForm" :model="login" label-width="auto" label-position="top" size="large" :rules="rules" @submit="performLogin(loginForm)">
+          <el-form ref="loginForm" :model="login" label-width="auto" label-position="top" size="large" :rules="rules" @submit="performLogin($refs.loginForm)">
             <el-form-item label="E-mail" label-width="auto" prop="email">
               <el-input type="text" v-model="login.email" clearable></el-input>
             </el-form-item>
@@ -86,8 +15,8 @@ export default defineComponent({
               <el-switch
                 v-model="login.remember"
                 inline-prompt
-                :active-icon="Check"
-                :inactive-icon="Close"
+                :active-icon="CheckIcon"
+                :inactive-icon="CloseIcon"
               >
               </el-switch>
             </el-form-item>
@@ -98,6 +27,67 @@ export default defineComponent({
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { ref, reactive } from 'vue'
+import { Check, Close } from '@element-plus/icons-vue'
+import logoFM from '@/assets/logo.png'
+import router from '@/router'
+import { AuthService } from '@/service/auth/auth.service'
+import { ElNotification, type FormInstance } from 'element-plus'
+
+const authService = new AuthService()
+
+// Icons
+const CloseIcon = Close
+const CheckIcon = Check
+
+// Data
+const login = reactive({
+  email: '',
+  password: '',
+  remember: false,
+})
+const logoUrl = logoFM
+const buttonLoading = ref(false)
+
+// Validation rules
+const rules = reactive({
+  email: [
+    { required: true, message: 'Por favor informe o seu e-mail', trigger: 'blur' },
+    { type: 'email', message: 'Por favor informe um endereço de e-mail válido', trigger: ['blur', 'change'] }
+  ],
+  password: [
+    { required: true, message: 'Por favor informe a senha', trigger: 'blur' }
+  ]
+})
+
+// Methods
+const performLogin = (loginForm: FormInstance | undefined) => {
+  if (!loginForm) return
+  loginForm.validate((valid) => {
+    if (valid) {
+      buttonLoading.value = true;
+      authService.tryLogin(login)
+        .then(() => {
+          buttonLoading.value = false
+          router.push('/')
+        })
+        .catch(() => {
+          ElNotification({
+            title: 'Algo deu errado!',
+            message: "Ocorreu um problema ao tentar efetuar o login",
+            position: 'bottom-right',
+            type: 'error',
+          })
+        })
+        .finally(() => {
+          buttonLoading.value = false
+        })
+    }
+  })
+}
+</script>
 
 <style scoped>
 .login-main {
