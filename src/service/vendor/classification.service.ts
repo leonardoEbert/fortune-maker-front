@@ -1,7 +1,7 @@
 import AxiosService from '@/common/axios.service'
 import type { VendorClassification } from '@/model/vendor/vendor-classification.model'
-import type { VendorClassificationPaginationParams } from '@/model/vendor/vendor-classification-pagination-params.model'
 import type { PaginatedResponse } from '@/types/paginated-response.type'
+import type { RequestPaginationParams } from '@/model/http/request-pagination-params.model'
 
 export class ClassificationService {
   private readonly axiosInstance = AxiosService;
@@ -30,7 +30,7 @@ export class ClassificationService {
     return await this.axiosInstance.post<VendorClassification>('/classification', classification);
   }
 
-  public async getClassificationsByPage(paginationParams: VendorClassificationPaginationParams) {
+  public async getClassificationsByPage(paginationParams: RequestPaginationParams) {
     return await this.axiosInstance.get<PaginatedResponse<VendorClassification>>('/classification/paginated', { params: paginationParams });
   }
 

@@ -146,8 +146,8 @@ import { Check, Close, Plus, Search } from '@element-plus/icons-vue'
 import { ClassificationService } from '@/service/vendor/classification.service'
 import { ElNotification, type FormInstance } from 'element-plus'
 import { VendorClassification } from '@/model/vendor/vendor-classification.model'
-import type { VendorClassificationPaginationParams } from '@/model/vendor/vendor-classification-pagination-params.model'
 import type { SelectOption } from '@/interfaces/select-option.interface'
+import type { RequestPaginationParams } from '@/model/http/request-pagination-params.model'
 
 const classificationService = new ClassificationService();
 
@@ -305,7 +305,7 @@ const updateClassification = () => {
 }
 
 const getClassificationsPaginated = async () => {
-  const paginationParams: VendorClassificationPaginationParams = {
+  const paginationParams: RequestPaginationParams = {
     currentPage: currentPage.value,
     pageSize: pageSize.value,
     searchField: searchTarget.value,
