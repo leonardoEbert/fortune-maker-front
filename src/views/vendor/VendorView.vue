@@ -46,7 +46,7 @@
   </el-row>
   <el-dialog
     v-model="centerDialogVisible"
-    title="Nova classificação"
+    title="Novo estabelecimento"
     width="800"
     align-center
     :close-on-click-modal="false"
@@ -54,7 +54,7 @@
     @close="resetVendorForm"
   >
     <el-divider class="modal-title-divider" />
-    <el-form ref="formClassificationRef" :model="formVendor" label-position="top" :rules="rules">
+    <el-form ref="formVendorRef" :model="formVendor" label-position="top" :rules="rules">
       <el-row :gutter="10">
         <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
           <el-form-item label="Nome" prop="name">
@@ -62,8 +62,8 @@
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
-          <el-form-item label="Classificação principal" prop="parentClassification">
-            <el-select v-model="formVendor.classifications" placeholder="Selecione" clearable no-data-text="Sem dados" @change="handleParent">
+          <el-form-item label="Classificações" prop="parentClassification">
+            <el-select v-model="formVendor.classifications" placeholder="Selecione" clearable no-data-text="Sem dados" @change="handleParent" multiple>
               <el-option
                 v-for="mainClassification in classificationList"
                 :key="mainClassification.value"
@@ -141,7 +141,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { Check, Close, Plus, Search } from '@element-plus/icons-vue';
 import { VendorService } from '@/service/vendor/vendor.service'
 import { Vendor } from '@/model/vendor/vendor.model'
@@ -149,6 +149,7 @@ import { ElNotification, type FormInstance } from 'element-plus'
 import { VendorClassification } from '@/model/vendor/vendor-classification.model'
 import type { SelectOption } from '@/interfaces/select-option.interface'
 import type { RequestPaginationParams } from '@/model/http/request-pagination-params.model'
+import { ClassificationService } from '@/service/vendor/classification.service'
 
 const vendorService = new VendorService();
 
@@ -169,6 +170,8 @@ const pageSize = ref(10);
 const currentPage = ref(1);
 const formVendorRef = ref<FormInstance>();
 const classificationList = ref<SelectOption[]>([]);
+
+const classificationService = new ClassificationService();
 
 const rules = {
   name: [
@@ -200,11 +203,18 @@ const getVendorsPaginated = async () => {
 }
 
 const openModal = () => {
+  clearVendorForm();
+  centerDialogVisible.value = true;
+  formVendor.classifications = undefined;
+}
 
+const closeModal = () => {
+  clearVendorForm();
+  centerDialogVisible.value = false;
+  formVendor.classifications = undefined;
 }
 
 const editVendor = async (vendorId: string) => {
-
 }
 
 const deleteVendor = async (vendorId: string) => {
@@ -233,14 +243,38 @@ const handleParent = (classifications: VendorClassification[]) => {
   formVendor.classifications = classifications;
 }
 
-const closeModal = () => {
-  centerDialogVisible.value = false;
-  formVendor.classifications = undefined;
+
+const saveVendor = (vendorForm: FormInstance | undefined) => {
+  if (!vendorForm) return;
+  buttonLoading.value = true;
+  vendorForm.validate((valid) => {
+    if (valid) {
+      if (formVendor.id === '') {
+        delete formVendor.id
+        createVendor();
+      } else {
+        updateVendor();
+      }
+    }
+  });
 }
 
-const saveVendor = async (vendorForm: FormInstance | undefined) => {
+const createVendor = () => {
 
 }
+
+const updateVendor = () => {
+
+}
+
+const loadMainClassifications = async () => {
+  classificationList.value = await classificationService.getClassificationList();
+};
+
+onMounted(async () => {
+  await loadMainClassifications();
+  await getVendorsPaginated();
+});
 
 </script>
 
