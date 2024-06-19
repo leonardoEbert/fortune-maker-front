@@ -233,7 +233,7 @@ const saveClassification = (classificationForm: FormInstance | undefined) => {
     if (valid) {
       if (formClassification.id === '') {
         delete formClassification.id
-        createClassification()
+        createClassification();
       } else {
        updateClassification();
       }
