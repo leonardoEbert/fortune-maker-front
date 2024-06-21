@@ -151,6 +151,7 @@ import type { SelectOption } from '@/interfaces/select-option.interface'
 import type { RequestPaginationParams } from '@/model/http/request-pagination-params.model'
 import { ClassificationService } from '@/service/vendor/classification.service'
 
+const classificationService = new ClassificationService();
 const vendorService = new VendorService();
 
 const CloseIcon = computed(() => Close);
@@ -171,7 +172,6 @@ const currentPage = ref(1);
 const formVendorRef = ref<FormInstance>();
 const classificationList = ref<SelectOption[]>([]);
 
-const classificationService = new ClassificationService();
 
 const rules = {
   name: [
@@ -260,7 +260,33 @@ const saveVendor = (vendorForm: FormInstance | undefined) => {
 }
 
 const createVendor = () => {
-
+  vendorService.createVendor(formVendor)
+    .then(() => {
+      buttonLoading.value = false;
+      ElNotification({
+        title: 'Sucesso!',
+        message: "A classificação foi salva!",
+        position: 'bottom-right',
+        type: 'success',
+      });
+      if (!insertMany.value) {
+        centerDialogVisible.value = false;
+      }
+    })
+    .catch(() => {
+      ElNotification({
+        title: 'Algo deu errado!',
+        message: "Ocorreu um problema ao tentar criar a classificação",
+        position: 'bottom-right',
+        type: 'error',
+      });
+    })
+    .finally(() => {
+      buttonLoading.value = false;
+      loadMainClassifications();
+      getVendorsPaginated();
+      clearVendorForm();
+    });
 }
 
 const updateVendor = () => {

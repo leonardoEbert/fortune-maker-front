@@ -13,4 +13,8 @@ export class VendorService {
   public async getVendorsByPage(paginationParams: RequestPaginationParams) {
     return await this.axiosInstance.get<PaginatedResponse<Vendor>>('/vendor/paginated', { params: paginationParams });
   }
+
+  public async createVendor(vendor: Vendor) {
+    return await this.axiosInstance.post<Vendor>(`/vendor`, vendor);
+  }
 }
